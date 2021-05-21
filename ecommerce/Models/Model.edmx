@@ -5,6 +5,13 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
       <Schema Namespace="e_tiendaModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Categoria">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Descripcion" Type="varchar" MaxLength="50" />
+        </EntityType>
         <EntityType Name="Presentacion">
           <Key>
             <PropertyRef Name="Id" />
@@ -24,6 +31,8 @@
           <Property Name="Descripcion" Type="varchar" MaxLength="500" />
           <Property Name="Stock_Maximo" Type="int" />
           <Property Name="Stock_Minimo" Type="int" />
+          <Property Name="Foto" Type="varchar" MaxLength="500" />
+          <Property Name="fk_categoria" Type="int" />
         </EntityType>
         <EntityType Name="sysdiagrams">
           <Key>
@@ -48,6 +57,18 @@
           <Property Name="Total" Type="float" />
           <Property Name="Direccion_Entrega" Type="date" />
         </EntityType>
+        <Association Name="FK_Producto_Categoria">
+          <End Role="Categoria" Type="Self.Categoria" Multiplicity="0..1" />
+          <End Role="Producto" Type="Self.Producto" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Categoria">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Producto">
+              <PropertyRef Name="fk_categoria" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Producto_Presentacion">
           <End Role="Presentacion" Type="Self.Presentacion" Multiplicity="0..1" />
           <End Role="Producto" Type="Self.Producto" Multiplicity="*" />
@@ -73,10 +94,15 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="e_tiendaModelStoreContainer">
+          <EntitySet Name="Categoria" EntityType="Self.Categoria" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Presentacion" EntityType="Self.Presentacion" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Producto" EntityType="Self.Producto" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Ventas" EntityType="Self.Ventas" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Producto_Categoria" Association="Self.FK_Producto_Categoria">
+            <End Role="Categoria" EntitySet="Categoria" />
+            <End Role="Producto" EntitySet="Producto" />
+          </AssociationSet>
           <AssociationSet Name="FK_Producto_Presentacion" Association="Self.FK_Producto_Presentacion">
             <End Role="Presentacion" EntitySet="Presentacion" />
             <End Role="Producto" EntitySet="Producto" />
@@ -91,13 +117,21 @@
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="e_tiendaModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Categoria">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Descripcion" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Producto" Relationship="Self.FK_Producto_Categoria" FromRole="Categoria" ToRole="Producto" />
+        </EntityType>
         <EntityType Name="Presentacion">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Tipo_Presentacion" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Productoes" Relationship="Self.FK_Producto_Presentacion" FromRole="Presentacion" ToRole="Producto" />
+          <NavigationProperty Name="Producto" Relationship="Self.FK_Producto_Presentacion" FromRole="Presentacion" ToRole="Producto" />
         </EntityType>
         <EntityType Name="Producto">
           <Key>
@@ -111,10 +145,13 @@
           <Property Name="Descripcion" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
           <Property Name="Stock_Maximo" Type="Int32" />
           <Property Name="Stock_Minimo" Type="Int32" />
+          <Property Name="Foto" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="fk_categoria" Type="Int32" />
+          <NavigationProperty Name="Categoria" Relationship="Self.FK_Producto_Categoria" FromRole="Producto" ToRole="Categoria" />
           <NavigationProperty Name="Presentacion" Relationship="Self.FK_Producto_Presentacion" FromRole="Producto" ToRole="Presentacion" />
           <NavigationProperty Name="Ventas" Relationship="Self.FK_Ventas_Producto" FromRole="Producto" ToRole="Ventas" />
         </EntityType>
-        <EntityType Name="sysdiagram">
+        <EntityType Name="sysdiagrams">
           <Key>
             <PropertyRef Name="diagram_id" />
           </Key>
@@ -124,7 +161,7 @@
           <Property Name="version" Type="Int32" />
           <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
         </EntityType>
-        <EntityType Name="Venta">
+        <EntityType Name="Ventas">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
@@ -138,6 +175,18 @@
           <Property Name="Direccion_Entrega" Type="DateTime" Precision="0" />
           <NavigationProperty Name="Producto" Relationship="Self.FK_Ventas_Producto" FromRole="Ventas" ToRole="Producto" />
         </EntityType>
+        <Association Name="FK_Producto_Categoria">
+          <End Role="Categoria" Type="Self.Categoria" Multiplicity="0..1" />
+          <End Role="Producto" Type="Self.Producto" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Categoria">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Producto">
+              <PropertyRef Name="fk_categoria" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Producto_Presentacion">
           <End Role="Presentacion" Type="Self.Presentacion" Multiplicity="0..1" />
           <End Role="Producto" Type="Self.Producto" Multiplicity="*" />
@@ -152,7 +201,7 @@
         </Association>
         <Association Name="FK_Ventas_Producto">
           <End Role="Producto" Type="Self.Producto" Multiplicity="0..1" />
-          <End Role="Ventas" Type="Self.Venta" Multiplicity="*" />
+          <End Role="Ventas" Type="Self.Ventas" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Producto">
               <PropertyRef Name="Id" />
@@ -162,17 +211,22 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="e_tiendaEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Presentacions" EntityType="Self.Presentacion" />
-          <EntitySet Name="Productoes" EntityType="Self.Producto" />
-          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagram" />
-          <EntitySet Name="Ventas" EntityType="Self.Venta" />
+        <EntityContainer Name="e_tiendaEntities1" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Categoria" EntityType="Self.Categoria" />
+          <EntitySet Name="Presentacion" EntityType="Self.Presentacion" />
+          <EntitySet Name="Producto" EntityType="Self.Producto" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" />
+          <EntitySet Name="Ventas" EntityType="Self.Ventas" />
+          <AssociationSet Name="FK_Producto_Categoria" Association="Self.FK_Producto_Categoria">
+            <End Role="Categoria" EntitySet="Categoria" />
+            <End Role="Producto" EntitySet="Producto" />
+          </AssociationSet>
           <AssociationSet Name="FK_Producto_Presentacion" Association="Self.FK_Producto_Presentacion">
-            <End Role="Presentacion" EntitySet="Presentacions" />
-            <End Role="Producto" EntitySet="Productoes" />
+            <End Role="Presentacion" EntitySet="Presentacion" />
+            <End Role="Producto" EntitySet="Producto" />
           </AssociationSet>
           <AssociationSet Name="FK_Ventas_Producto" Association="Self.FK_Ventas_Producto">
-            <End Role="Producto" EntitySet="Productoes" />
+            <End Role="Producto" EntitySet="Producto" />
             <End Role="Ventas" EntitySet="Ventas" />
           </AssociationSet>
         </EntityContainer>
@@ -181,8 +235,16 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="e_tiendaModelStoreContainer" CdmEntityContainer="e_tiendaEntities">
-          <EntitySetMapping Name="Presentacions">
+        <EntityContainerMapping StorageEntityContainer="e_tiendaModelStoreContainer" CdmEntityContainer="e_tiendaEntities1">
+          <EntitySetMapping Name="Categoria">
+            <EntityTypeMapping TypeName="e_tiendaModel.Categoria">
+              <MappingFragment StoreEntitySet="Categoria">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Descripcion" ColumnName="Descripcion" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Presentacion">
             <EntityTypeMapping TypeName="e_tiendaModel.Presentacion">
               <MappingFragment StoreEntitySet="Presentacion">
                 <ScalarProperty Name="Id" ColumnName="Id" />
@@ -190,7 +252,7 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Productoes">
+          <EntitySetMapping Name="Producto">
             <EntityTypeMapping TypeName="e_tiendaModel.Producto">
               <MappingFragment StoreEntitySet="Producto">
                 <ScalarProperty Name="Id" ColumnName="Id" />
@@ -201,11 +263,13 @@
                 <ScalarProperty Name="Descripcion" ColumnName="Descripcion" />
                 <ScalarProperty Name="Stock_Maximo" ColumnName="Stock_Maximo" />
                 <ScalarProperty Name="Stock_Minimo" ColumnName="Stock_Minimo" />
+                <ScalarProperty Name="Foto" ColumnName="Foto" />
+                <ScalarProperty Name="fk_categoria" ColumnName="fk_categoria" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="sysdiagrams">
-            <EntityTypeMapping TypeName="e_tiendaModel.sysdiagram">
+            <EntityTypeMapping TypeName="e_tiendaModel.sysdiagrams">
               <MappingFragment StoreEntitySet="sysdiagrams">
                 <ScalarProperty Name="name" ColumnName="name" />
                 <ScalarProperty Name="principal_id" ColumnName="principal_id" />
@@ -216,7 +280,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Ventas">
-            <EntityTypeMapping TypeName="e_tiendaModel.Venta">
+            <EntityTypeMapping TypeName="e_tiendaModel.Ventas">
               <MappingFragment StoreEntitySet="Ventas">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Fk_Producto" ColumnName="Fk_Producto" />
@@ -243,7 +307,7 @@
     <Options>
       <DesignerInfoPropertySet>
         <DesignerProperty Name="ValidateOnBuild" Value="true" />
-        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
         <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
         <DesignerProperty Name="UseLegacyProvider" Value="false" />
         <DesignerProperty Name="CodeGenerationStrategy" Value="Ninguno" />

@@ -17,7 +17,7 @@ namespace ecommerce.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Producto()
         {
-            this.Ventas = new HashSet<Venta>();
+            this.Ventas = new HashSet<Ventas>();
         }
     
         public int Id { get; set; }
@@ -28,9 +28,12 @@ namespace ecommerce.Models
         public string Descripcion { get; set; }
         public Nullable<int> Stock_Maximo { get; set; }
         public Nullable<int> Stock_Minimo { get; set; }
+        public string Foto { get; set; }
+        public Nullable<int> fk_categoria { get; set; }
     
+        public virtual Categoria Categoria { get; set; }
         public virtual Presentacion Presentacion { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Venta> Ventas { get; set; }
+        public virtual ICollection<Ventas> Ventas { get; set; }
     }
 }

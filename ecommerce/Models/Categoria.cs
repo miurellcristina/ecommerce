@@ -12,17 +12,18 @@ namespace ecommerce.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Venta
+    public partial class Categoria
     {
-        public int Id { get; set; }
-        public Nullable<int> Fk_Producto { get; set; }
-        public Nullable<int> Fk_Usuario { get; set; }
-        public Nullable<System.DateTime> Fecha_Compra { get; set; }
-        public Nullable<System.DateTime> Fecha_Entrega_Maxima { get; set; }
-        public Nullable<int> Cantidad { get; set; }
-        public Nullable<double> Total { get; set; }
-        public Nullable<System.DateTime> Direccion_Entrega { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Categoria()
+        {
+            this.Producto = new HashSet<Producto>();
+        }
     
-        public virtual Producto Producto { get; set; }
+        public int Id { get; set; }
+        public string Descripcion { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Producto> Producto { get; set; }
     }
 }

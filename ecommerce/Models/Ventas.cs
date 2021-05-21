@@ -12,18 +12,17 @@ namespace ecommerce.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Presentacion
+    public partial class Ventas
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Presentacion()
-        {
-            this.Producto = new HashSet<Producto>();
-        }
-    
         public int Id { get; set; }
-        public string Tipo_Presentacion { get; set; }
+        public Nullable<int> Fk_Producto { get; set; }
+        public Nullable<int> Fk_Usuario { get; set; }
+        public Nullable<System.DateTime> Fecha_Compra { get; set; }
+        public Nullable<System.DateTime> Fecha_Entrega_Maxima { get; set; }
+        public Nullable<int> Cantidad { get; set; }
+        public Nullable<double> Total { get; set; }
+        public Nullable<System.DateTime> Direccion_Entrega { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Producto> Producto { get; set; }
+        public virtual Producto Producto { get; set; }
     }
 }
